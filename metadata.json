@@ -1,0 +1,26 @@
+{
+  "name": "ryno75-users",
+  "version": "0.1.0",
+  "author": "ryno75",
+  "summary": "Manages Puppet users for servers",
+  "license": "Apache-2.0",
+  "source": "https://github.com/ryno75/puppet_users.git",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">= 1.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Amazon"
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    }
+  ]
+}
