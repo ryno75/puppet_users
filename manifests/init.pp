@@ -3,10 +3,48 @@
 #
 # Manageds users and groups
 #
-class users {
+# Parameters
+# ----------
+#
+# * `user_hash`
+#   A hash of user(s) and properties to create user accounts from
+#
+# * `login_defs_file`
+#   Absolute path to login.defs file
+#	default: /etc/login.defs
+#
+# * `uid_min`
+#   Set's the minimum UID to start adding users at 
+#	default: 1000
+#
+# * `gid_min`
+#   Set's the minimum GID to start adding groups at 
+#	default: 1000
+#
+class users (
+  $user_hash	   = hiera_hash('users::user_hash'),
+  $login_defs_file = hiera('users::login_defs_file',
+                           $users::params::login_defs_file),
+  $uid_min         = hiera('users::uid_min',
+                           $users::params::uid_min),
+  $gid_min         = hiera('users::gid_min',
+                           $users::params::gid_min)
+) inherits users::params {
+
+  # validate parameters here
+  validate_hash($user_hash)
+  if $login_defs_file {
+    validate_absolute_path($login_defs_file)
+  }
+  if $uid_min {
+    validate_integer($uid_min)
+  }
+  if $gid_min {
+    validate_integer($gid_min)
+  }
 
   # set linux minimum uid/gid if values found in hiera
-  if ($login_defs_file) and ($uid_min) and ($gid_min) {
+  if ($login_defs_file != undef) and ($uid_min != undef) and ($gid_min != undef) {
     exec { 'modify_login_defs_uid_min':
       command => "sed -ri \'s/^#?(UID_MIN\\s*)([0-9]*)$/\\1${uid_min}/g\' ${login_defs_file}",
       unless  => "grep -q \'^UID_MIN\\s*${uid_min}\$\' ${login_defs_file}",
