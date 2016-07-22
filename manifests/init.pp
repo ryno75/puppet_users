@@ -11,18 +11,19 @@
 #
 # * `login_defs_file`
 #   Absolute path to login.defs file
-#	default: /etc/login.defs
+#    default: /etc/login.defs
 #
 # * `uid_min`
 #   Set's the minimum UID to start adding users at 
-#	default: 1000
+#    default: 1000
 #
 # * `gid_min`
 #   Set's the minimum GID to start adding groups at 
-#	default: 1000
+#    default: 1000
 #
 class users (
-  $user_hash	   = hiera_hash('users::user_hash'),
+  $user_hash       = hiera_hash('users::user_hash', undef),
+  $group_hash      = hiera_hash('users::group_hash', undef),
   $login_defs_file = hiera('users::login_defs_file',
                            $users::params::login_defs_file),
   $uid_min         = hiera('users::uid_min',
@@ -32,7 +33,12 @@ class users (
 ) inherits users::params {
 
   # validate parameters here
-  validate_hash($user_hash)
+  if $user_hash {
+    validate_hash($user_hash)
+  }
+  if $group_hash {
+    validate_hash($group_hash)
+  }
   if $login_defs_file {
     validate_absolute_path($login_defs_file)
   }
@@ -85,7 +91,7 @@ class users (
       user { $username:
         ensure         => present,
         comment        => $user['comment'],
-        groups         => $user_groups,
+        groups         => $user['groups'],
         password       => $password,
         home           => $user_home,
         managehome     => $manage_home,
@@ -125,8 +131,8 @@ class users (
   }
 
   # Any group hash had better align with the group resource props!
-  if $groups {
-    create_resources(group, $groups)
+  if $group_hash {
+    create_resources(group, $group_hash)
   }
 
 }
