@@ -131,7 +131,7 @@ class users (
     }
   }
 
-  # Any group hash had better align with the group resource props!
+  # Any group hash passed had better align with the group resource props!
   if $group_hash {
     create_resources(group, $group_hash)
   }
