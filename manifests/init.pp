@@ -100,6 +100,7 @@ class users (
       # manage optional ssh authorized_keys file
       if $user['ssh_authorized_keys'] {
         $user['ssh_authorized_keys'].each |String $key_comment, Hash $auth_key| {
+          # prepend the username to the key name to prevent potential duplicates
           ssh_authorized_key { "${username}_${key_comment}":
             user    => $username,
             type    => $auth_key['type'],
